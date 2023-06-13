@@ -11,7 +11,7 @@ import (
 func FindAll(ctx *gin.Context) {
 	var reservations []models.Reservation
 
-	models.DB.Joins("User").Joins("Room").Joins("Room.Category").Find(&reservations)
+	models.DB.Joins("User").Joins("Room").Joins("Room.Category").Preload("Tools").Find(&reservations)
 	ctx.JSON(http.StatusOK, gin.H{"reservations": reservations})
 }
 
@@ -19,7 +19,7 @@ func FindById(ctx *gin.Context) {
 	var reservation models.Reservation
 	id := ctx.Param("id")
 
-	if err := models.DB.Joins("User").Joins("Room").Joins("Room.Category").First(&reservation, id).Error; err != nil {
+	if err := models.DB.Joins("User").Joins("Room").Joins("Room.Category").Preload("Tools").First(&reservation, id).Error; err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
 			ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "No Data Found"})

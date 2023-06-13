@@ -8,4 +8,5 @@ type Reservation struct {
 	Room     Room   `json:"room"`
 	CheckIn  string `gorm:"type:timestamp" json:"check_in"`
 	CheckOut string `gorm:"type:timestamp" json:"check_out"`
+	Tools    []Tool `json:"tools"`
 }

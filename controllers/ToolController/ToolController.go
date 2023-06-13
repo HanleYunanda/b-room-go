@@ -1,4 +1,4 @@
-package roomcontroller
+package toolcontroller
 
 import (
 	"b-room/models"
@@ -9,17 +9,17 @@ import (
 )
 
 func FindAll(ctx *gin.Context) {
-	var rooms []models.Room
+	var tools []models.Tool
 
-	models.DB.Joins("Category").Find(&rooms)
-	ctx.JSON(http.StatusOK, gin.H{"rooms": rooms})
+	models.DB.Find(&tools)
+	ctx.JSON(http.StatusOK, gin.H{"tools": tools})
 }
 
 func FindById(ctx *gin.Context) {
-	var room models.Room
+	var tool models.Tool
 	id := ctx.Param("id")
 
-	if err := models.DB.Joins("Category").First(&room, id).Error; err != nil {
+	if err := models.DB.First(&tool, id).Error; err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
 			ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "No Data Found"})
@@ -29,37 +29,37 @@ func FindById(ctx *gin.Context) {
 			return
 		}
 	}
-	ctx.JSON(http.StatusOK, gin.H{"room": room})
+	ctx.JSON(http.StatusOK, gin.H{"tool": tool})
 
 }
 
 func Create(ctx *gin.Context) {
-	var room models.Room
+	var tool models.Tool
 
-	if err := ctx.ShouldBindJSON(&room); err != nil {
+	if err := ctx.ShouldBindJSON(&tool); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
-	if models.DB.Create(&room).RowsAffected == 0 {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Error creating room"})
+	if models.DB.Create(&tool).RowsAffected == 0 {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Error creating tool"})
 		return
 	} else {
-		ctx.JSON(http.StatusOK, gin.H{"message": "Data created successfully", "room": room})
+		ctx.JSON(http.StatusOK, gin.H{"message": "Data created successfully", "tool": tool})
 	}
 }
 
 func Update(ctx *gin.Context) {
-	var room models.Room
+	var tool models.Tool
 	id := ctx.Param("id")
 
-	if err := ctx.ShouldBindJSON(&room); err != nil {
+	if err := ctx.ShouldBindJSON(&tool); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
-	if models.DB.Model(&room).Where("id = ?", id).Updates(&room).RowsAffected == 0 {
-		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Error updating room"})
+	if models.DB.Model(&tool).Where("id = ?", id).Updates(&tool).RowsAffected == 0 {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Error updating tool"})
 		return
 	}
 
@@ -67,14 +67,14 @@ func Update(ctx *gin.Context) {
 }
 
 func Delete(ctx *gin.Context) {
-	var room models.Room
+	var tool models.Tool
 	id := ctx.Param("id")
-	// if err := ctx.ShouldBindJSON(&room); err != nil {
+	// if err := ctx.ShouldBindJSON(&tool); err != nil {
 	// 	ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 	// 	return
 	// }
 
-	if models.DB.Delete(&room, id).RowsAffected == 0 {
+	if models.DB.Delete(&tool, id).RowsAffected == 0 {
 		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "No Data Found"})
 		return
 	}

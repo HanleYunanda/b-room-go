@@ -4,6 +4,7 @@ import (
 	categorycontroller "b-room/controllers/CategoryController"
 	reservationcontroller "b-room/controllers/ReservationController"
 	roomcontroller "b-room/controllers/RoomController"
+	toolcontroller "b-room/controllers/ToolController"
 	usercontroller "b-room/controllers/UserController"
 	"b-room/models"
 
@@ -37,6 +38,12 @@ func main() {
 	root.POST("api/reservation", reservationcontroller.Create)
 	root.PUT("api/reservation/:id", reservationcontroller.Update)
 	root.DELETE("api/reservation/:id", reservationcontroller.Delete)
+
+	root.GET("api/tool", toolcontroller.FindAll)
+	root.GET("api/tool/:id", toolcontroller.FindById)
+	root.POST("api/tool", toolcontroller.Create)
+	root.PUT("api/tool/:id", toolcontroller.Update)
+	root.DELETE("api/tool/:id", toolcontroller.Delete)
 
 	root.Run()
 }
