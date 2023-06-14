@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -41,6 +42,9 @@ func Create(ctx *gin.Context) {
 		return
 	}
 
+	pass, _ := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
+	user.Password = string(pass)
+
 	models.DB.Create(&user)
 	ctx.JSON(http.StatusOK, gin.H{"user": user})
 }
@@ -53,6 +57,9 @@ func Update(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
+
+	pass, _ := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
+	user.Password = string(pass)
 
 	if models.DB.Model(&user).Where("id = ?", id).Updates(&user).RowsAffected == 0 {
 		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "No Data Found"})
