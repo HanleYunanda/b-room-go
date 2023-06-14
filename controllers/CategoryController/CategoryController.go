@@ -55,7 +55,7 @@ func Update(ctx *gin.Context) {
 	}
 
 	if models.DB.Model(&category).Where("id = ?", id).Updates(&category).RowsAffected == 0 {
-		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "No Data Found"})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Failed to update category"})
 		return
 	}
 

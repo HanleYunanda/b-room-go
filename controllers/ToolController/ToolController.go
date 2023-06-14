@@ -42,7 +42,7 @@ func Create(ctx *gin.Context) {
 	}
 
 	if models.DB.Create(&tool).RowsAffected == 0 {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Error creating tool"})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Failed to create tool"})
 		return
 	} else {
 		ctx.JSON(http.StatusOK, gin.H{"message": "Data created successfully", "tool": tool})
@@ -59,7 +59,7 @@ func Update(ctx *gin.Context) {
 	}
 
 	if models.DB.Model(&tool).Where("id = ?", id).Updates(&tool).RowsAffected == 0 {
-		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Error updating tool"})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Failed to update tool"})
 		return
 	}
 

@@ -42,7 +42,7 @@ func Create(ctx *gin.Context) {
 	}
 
 	if models.DB.Create(&room).RowsAffected == 0 {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Error creating room"})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Failed to create room"})
 		return
 	} else {
 		ctx.JSON(http.StatusOK, gin.H{"message": "Data created successfully", "room": room})
@@ -59,7 +59,7 @@ func Update(ctx *gin.Context) {
 	}
 
 	if models.DB.Model(&room).Where("id = ?", id).Updates(&room).RowsAffected == 0 {
-		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Error updating room"})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Failed to update room"})
 		return
 	}
 

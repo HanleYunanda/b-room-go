@@ -2,6 +2,7 @@ package models
 
 import (
 	"b-room/helper"
+	"os"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -10,7 +11,8 @@ import (
 var DB *gorm.DB
 
 func ConnectDB() {
-	db, err := gorm.Open(mysql.Open("root:@tcp(localhost:3306)/b-room"))
+	db_env := os.Getenv("DB")
+	db, err := gorm.Open(mysql.Open(db_env))
 	helper.PanicError(err)
 
 	db.AutoMigrate(&User{}, &Category{}, &Room{}, &Reservation{})

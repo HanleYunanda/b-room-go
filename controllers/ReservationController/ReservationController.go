@@ -42,7 +42,7 @@ func Create(ctx *gin.Context) {
 	}
 
 	if models.DB.Create(&reservation).RowsAffected == 0 {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Error creating reservation"})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Failed to create reservation"})
 		return
 	} else {
 		id := reservation.Id
@@ -61,7 +61,7 @@ func Update(ctx *gin.Context) {
 	}
 
 	if models.DB.Model(&reservation).Where("id = ?", id).Updates(&reservation).RowsAffected == 0 {
-		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Error updating reservation"})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Failed to update reservation"})
 		return
 	}
 

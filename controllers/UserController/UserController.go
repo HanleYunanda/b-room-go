@@ -46,6 +46,12 @@ func Create(ctx *gin.Context) {
 	user.Password = string(pass)
 
 	models.DB.Create(&user)
+
+	if models.DB.Create(&user).RowsAffected == 0 {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Failed to create user"})
+		return
+	}
+
 	ctx.JSON(http.StatusOK, gin.H{"user": user})
 }
 
@@ -62,7 +68,7 @@ func Update(ctx *gin.Context) {
 	user.Password = string(pass)
 
 	if models.DB.Model(&user).Where("id = ?", id).Updates(&user).RowsAffected == 0 {
-		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "No Data Found"})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Failed to update user"})
 		return
 	}
 
