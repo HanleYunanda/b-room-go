@@ -35,10 +35,29 @@ func FindById(ctx *gin.Context) {
 
 func Create(ctx *gin.Context) {
 	var reservation models.Reservation
+	var otherReservations []models.Reservation
 
 	if err := ctx.ShouldBindJSON(&reservation); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
+	}
+
+	if reservation.CheckIn >= reservation.CheckOut {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Failed to create reservation"})
+		return
+	}
+
+	if models.DB.Where("room_id = ? AND reservation_date = ?", reservation.RoomId, reservation.ReservationDate).Find(&otherReservations).RowsAffected > 0 {
+		for _, dataOthers := range otherReservations {
+			if (reservation.CheckIn > dataOthers.CheckIn && reservation.CheckIn < dataOthers.CheckOut) || (reservation.CheckOut > dataOthers.CheckIn && reservation.CheckOut < dataOthers.CheckOut) {
+				ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "The room has been reserved"})
+				return
+			}
+			if (reservation.CheckIn == dataOthers.CheckIn) || (reservation.CheckOut == dataOthers.CheckOut) {
+				ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "The room has been reserved"})
+				return
+			}
+		}
 	}
 
 	if models.DB.Create(&reservation).RowsAffected == 0 {
@@ -54,10 +73,29 @@ func Create(ctx *gin.Context) {
 func Update(ctx *gin.Context) {
 	var reservation models.Reservation
 	id := ctx.Param("id")
+	var otherReservations []models.Reservation
 
 	if err := ctx.ShouldBindJSON(&reservation); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
+	}
+
+	if reservation.CheckIn >= reservation.CheckOut {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Failed to create reservation"})
+		return
+	}
+
+	if models.DB.Where("room_id = ? AND reservation_date = ?", reservation.RoomId, reservation.ReservationDate).Find(&otherReservations).RowsAffected > 0 {
+		for _, dataOthers := range otherReservations {
+			if (reservation.CheckIn > dataOthers.CheckIn && reservation.CheckIn < dataOthers.CheckOut) || (reservation.CheckOut > dataOthers.CheckIn && reservation.CheckOut < dataOthers.CheckOut) {
+				ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "The room has been reserved"})
+				return
+			}
+			if (reservation.CheckIn == dataOthers.CheckIn) || (reservation.CheckOut == dataOthers.CheckOut) {
+				ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "The room has been reserved"})
+				return
+			}
+		}
 	}
 
 	if models.DB.Model(&reservation).Where("id = ?", id).Updates(&reservation).RowsAffected == 0 {
